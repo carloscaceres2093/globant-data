@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  python-cron:
+    build: .
+    container_name: python-cron-container
+    volumes:
+      - ./data:/home/Documents/docker-compose/data          # Mount host input directory
+      - ./logs:/var/log                  # Mount host logs directory
+    restart: unless-stopped    
+    networks:
+      - internal-network
+networks:
+  internal-network:
+    driver: bridge

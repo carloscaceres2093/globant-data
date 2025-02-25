@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgres_container_ms
+    image: postgres
+    environment:
+      - POSTGRES_DB=default-db
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal-network
+
+  globant-api:
+    build: ./globant-api  
+    ports:
+      - "8080:8080" 
+    environment:
+      ENVIRONMENT: prod
+    depends_on:
+      - postgres
+      - globant-ms
+      - globant-auth-ms
+    networks:
+      - internal-network
+
+  globant-ms:
+    build: ./globant-ms 
+    ports:
+      - "8082:8080"
+    environment:
+      - ENVIRONMENT=prod
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=globant-ms
+      - MAX_IDLE_SIZE=15
+      - MAX_OPEN_SIZE=15
+      - MAX_LIFE_TIME=270000
+    volumes:
+      - ./globant-ms/migrations:/app/migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal-network
+
+  globant-auth-ms:
+    build: ./globant-auth-ms  
+    ports:
+      - "8083:8080"  # Expose API because you need to created a first user to start to using the service (should be unexpose)
+    environment:
+      - ENVIRONMENT=prod
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=globant-auth-ms
+      - MAX_IDLE_SIZE=15
+      - MAX_OPEN_SIZE=15
+      - MAX_LIFE_TIME=270000
+      - SALT='globant-auth'
+    volumes:
+      - ./globant-auth-ms/migrations:/app/migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal-network
+    
+  python-scripts:
+    build: ./python-scripts 
+    container_name: python-cron-container
+    environment:
+      - TABLE_NAME=employees
+      - ROWS_PER_DUMP=15000
+      - DB_NAME=globant-ms
+      - DB_HOST=postgres
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+    volumes:
+      - /home/Documents/docker-compose/data:/root/data         # Mount host input directory
+      - /home/Documents/docker-compose/logs:/var/log                
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal-network
+    restart: unless-stopped  
+
+  streamlit-app:
+    build: ./globant-streamlit
+    container_name: streamlit-container
+    ports:
+      - "8501:8501"
+    environment:
+      - BASE_PATH=http://globant-ms:8080/globant-ms/v1
+    depends_on:
+      - globant-ms
+    networks:
+      - internal-network
+# Define a custom internal network
+networks:
+  internal-network:
+    driver: bridge
