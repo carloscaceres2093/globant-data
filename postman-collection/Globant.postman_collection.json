@@ -1,0 +1,190 @@
+{
+	"info": {
+		"_postman_id": "d65c99cc-61f5-4416-8efa-70119288419a",
+		"name": "Globant",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14431665"
+	},
+	"item": [
+		{
+			"name": "Internal Use",
+			"item": [
+				{
+					"name": "CreateUser",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_name\":\"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{authUrl}}/user",
+							"host": [
+								"{{authUrl}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authValidation",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{authUrl}}/user/:user_code?token=8cw7huC9kdZFH8LJC8QMBGHghCqf8G_2WTN-hh3HcoA",
+							"host": [
+								"{{authUrl}}"
+							],
+							"path": [
+								"user",
+								":user_code"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "8cw7huC9kdZFH8LJC8QMBGHghCqf8G_2WTN-hh3HcoA"
+								}
+							],
+							"variable": [
+								{
+									"key": "user_code",
+									"value": "bc7fdcca-37ff-4c08-9c6c-6fcee65998ad"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "API",
+			"item": [
+				{
+					"name": "UploadFile",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "1dz9_Sj1SIwk_FxpwjBIRX2HtyghGHQYWCVYk_gZ2KU=",
+								"type": "text"
+							},
+							{
+								"key": "X-user",
+								"value": "7c28a5de-a135-4f62-b0df-607f4ac651db",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/carlos/Downloads/hired_employees.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{apiUrl}}/upload",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "HiredMetrics",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{msUrl}}/hired_metrics?year=2021",
+							"host": [
+								"{{msUrl}}"
+							],
+							"path": [
+								"hired_metrics"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "2021"
+								},
+								{
+									"key": "department_name",
+									"value": "Marketing",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "QuarterMetrics",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{msUrl}}/quarter_metrics?year=2021",
+							"host": [
+								"{{msUrl}}"
+							],
+							"path": [
+								"quarter_metrics"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "2021"
+								},
+								{
+									"key": "department_name",
+									"value": "Marketing",
+									"disabled": true
+								},
+								{
+									"key": "job_name",
+									"value": "Accountant I",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
